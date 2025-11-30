@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostInRakuten - 楽天市場検索バー拡張機能</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 3px solid #e60012;
+    }
+
+    h1 {
+      color: #e60012;
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #e60012;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(230, 0, 18, 0.3);
+    }
+
+    .nav-link:hover {
+      background: #c50010;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(230, 0, 18, 0.4);
+    }
+
+    .nav-link.secondary {
+      background: #666;
+      box-shadow: 0 2px 8px rgba(102, 102, 102, 0.3);
+    }
+
+    .nav-link.secondary:hover {
+      background: #555;
+      box-shadow: 0 4px 12px rgba(102, 102, 102, 0.4);
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 24px;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      padding-left: 15px;
+      border-left: 5px solid #e60012;
+    }
+
+    h3 {
+      color: #555;
+      font-size: 18px;
+      margin-top: 25px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-left: 25px;
+      margin-bottom: 15px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #e60012;
+      transition: transform 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card h4 {
+      color: #e60012;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .feature-card p {
+      color: #666;
+      font-size: 14px;
+      margin: 0;
+      text-align: left;
+    }
+
+    .bug-report-section {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 30px;
+      margin: 30px 0;
+    }
+
+    .bug-report-section h2 {
+      color: #856404;
+      border-left-color: #ffc107;
+      margin-top: 0;
+    }
+
+    .bug-report-section .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: #e60012;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(230, 0, 18, 0.3);
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: #c50010;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(230, 0, 18, 0.4);
+    }
+
+    .btn.primary {
+      background: #e60012;
+    }
+
+    .btn.secondary {
+      background: #6c757d;
+      box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn.secondary:hover {
+      background: #5a6268;
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+    }
+
+    .note {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .note strong {
+      color: #1976D2;
+    }
+
+    .info-box {
+      background: #f9f9f9;
+      border-left: 4px solid #666;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .footer {
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+      }
+
+      .nav-link, .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎃 GhostInRakuten</h1>
+      <p class="subtitle">楽天市場の検索バーに透明オーバーレイを配置し、ホイールスクロールで商品情報を表示</p>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">機能</a>
+        <a href="#report" class="nav-link">不具合報告</a>
+        <a href="privacy-policy.html" class="nav-link secondary">プライバシーポリシー</a>
+      </div>
+    </div>
+
+    <div class="section" id="features">
+      <h2>主な機能</h2>
+      <div class="feature-list">
+        <div class="feature-card">
+          <h4>🔍 透明オーバーレイ</h4>
+          <p>検索バー上に完全透明なオーバーレイを配置。クリックやドラッグは通常通り動作します。</p>
+        </div>
+        <div class="feature-card">
+          <h4>🖱️ ホイールスクロール</h4>
+          <p>上スクロールで割引商品、下スクロールでランキング商品を表示します。</p>
+        </div>
+        <div class="feature-card">
+          <h4>📍 位置ベース選定</h4>
+          <p>マウス位置（0%～100%）に応じて商品を選定する柔軟なシステム。</p>
+        </div>
+        <div class="feature-card">
+          <h4>🎨 視覚的フィードバック</h4>
+          <p>赤い破線の境界線（ホバー時は黄色）でオーバーレイの位置を視覚的に表示。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="howto">
+      <h2>使い方</h2>
+      <ol>
+        <li>楽天市場のページを開きます</li>
+        <li>検索バーにマウスを移動すると、赤い破線が表示されます</li>
+        <li>ホイールスクロール操作：
+          <ul>
+            <li><strong>上スクロール</strong>：割引率の高い商品の窓を表示</li>
+            <li><strong>下スクロール</strong>：ランキング商品の窓を表示</li>
+          </ul>
+        </li>
+        <li>ESCキーで商品窓を閉じます</li>
+      </ol>
+    </div>
+
+    <div class="bug-report-section" id="report">
+      <h2>🐛 不具合報告・お問い合わせ</h2>
+      <p>
+        GhostInRakutenに関する不具合報告、機能要望、ご質問は、GitHub Issuesを通じてお気軽にお知らせください。
+        報告いただいた内容は、今後の改善に活用させていただきます。
+      </p>
+
+      <div class="info-box">
+        <h3>📋 報告前にご確認ください</h3>
+        <ul>
+          <li>使用しているChromeのバージョン</li>
+          <li>拡張機能のバージョン（拡張機能の詳細画面で確認できます）</li>
+          <li>OS（Windows、macOS、Linuxなど）</li>
+          <li>不具合が発生したページのURL</li>
+          <li>再現手順（可能であればスクリーンショットも）</li>
+        </ul>
+      </div>
+
+      <div class="btn-group">
+        <a href="https://github.com/YOUR_USERNAME/GhostInRakuten/issues/new?template=bug_report.md&labels=bug" 
+           target="_blank" 
+           class="btn primary">
+          🐛 不具合を報告する
+        </a>
+        <a href="https://github.com/YOUR_USERNAME/GhostInRakuten/issues/new?template=feature_request.md&labels=enhancement" 
+           target="_blank" 
+           class="btn secondary">
+          💡 機能要望を送る
+        </a>
+        <a href="https://github.com/YOUR_USERNAME/GhostInRakuten/issues" 
+           target="_blank" 
+           class="btn secondary">
+          📝 すべてのIssueを見る
+        </a>
+      </div>
+
+      <div class="note" style="margin-top: 25px;">
+        <strong>💡 ヒント:</strong> GitHubアカウントがない場合は、作成が必要です（無料）。
+        アカウント作成後、上記のボタンから報告できます。
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>今後の予定</h2>
+      <ul>
+        <li>✅ 基本的な機能（実装済み）</li>
+        <li>⏳ 楽天ウェブサービスAPIとの連携</li>
+        <li>⏳ 位置パラメータのマッピング機能</li>
+        <li>⏳ キャッシュ機能の実装</li>
+        <li>⏳ 設定画面の拡張</li>
+        <li>⏳ エラーハンドリングの強化</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p>© 2024 GhostInRakuten. All rights reserved.</p>
+      <p style="margin-top: 10px;">
+        <a href="privacy-policy.html" style="color: #e60012;">プライバシーポリシー</a> | 
+        <a href="https://github.com/YOUR_USERNAME/GhostInRakuten" target="_blank" style="color: #e60012;">GitHubリポジトリ</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+
